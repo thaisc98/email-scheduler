@@ -4,10 +4,8 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
@@ -15,17 +13,14 @@ import org.springframework.stereotype.Component;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
-import java.util.Properties;
-
-
 @Component
 public class EmailJob extends QuartzJobBean {
 
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value(value = "${mail.smtp.username}")
-    private String username;
+    @Autowired
+    private MailProperties mailProperties;
 
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
@@ -34,7 +29,7 @@ public class EmailJob extends QuartzJobBean {
         String body = jobDataMap.getString("body");
         String recipientEmail = jobDataMap.getString("email");
 
-        sendMail(username, recipientEmail, subject, body);
+        sendMail(mailProperties.getUsername(), recipientEmail, subject, body);
     }
 
     private void sendMail(String fromEmail, String toEmail, String subject, String body) {

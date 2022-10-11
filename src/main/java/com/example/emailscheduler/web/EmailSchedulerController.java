@@ -4,7 +4,6 @@ import com.example.emailscheduler.payload.EmailRequest;
 import com.example.emailscheduler.payload.EmailResponse;
 import com.example.emailscheduler.quartz.job.EmailJob;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,8 +23,11 @@ import java.util.UUID;
 @RestController
 public class EmailSchedulerController {
 
-    @Autowired
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
+
+    public EmailSchedulerController(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
 
     @PostMapping(value = "/schedule/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EmailResponse> scheduleEmail(@Valid @RequestBody EmailRequest emailRequest) {
